@@ -4,7 +4,7 @@
 --Sequencers, pseudo-samplers and a lot of stuff.
 require "microCode"
 require "microTables"
-require "allen"
+require "allen-helix"
 math.randomseed(os.clock())
 rand = math.random
 
