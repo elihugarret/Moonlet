@@ -352,16 +352,15 @@ function rchars(str)
 end
 explode = chars
 -------------------------------------------------------------------
---Character reduction (unicode experiment) Added by Elihú Garrett (2014)
-→ = {}
-function →:¡(str)
+
+function sound(str)
 local b = str:gsub('|','')
   local _chars = {}
   for char in b:gmatch('.') do t_insert(_chars,char) end
   return #_chars>0 and _chars or nil
 end
 
-function →:¬(str)
+function rsound(str)
 local b = str:gsub('|','')
 return b + ''
 
