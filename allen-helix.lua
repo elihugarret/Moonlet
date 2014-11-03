@@ -795,10 +795,9 @@ end
 --Choose function (similar to .choose mehod in SuperCollider)
 --Returns a random character.
 -- Added by Elihú Garrett (2014)
-function choose(strng)
-local d = chars(strng)
-local choose = math.random(#d)
- return d[choose] 
+function choose(...)
+ local var = {...}
+  return var[math.random(#var)]
 end
 --- Imports library functions inside a given context or the global environment.
 -- @tparam[opt] table context a context. Defaults to `_G` (global environment) when not given.
