@@ -126,8 +126,10 @@ arg.i = arg.i or 0 -- shift2
 arg.u = arg.u or vR(1,1,100,1,1) --ugen
 arg.g = arg.g or vR(1,1,100,1,1) --ugenVar
 arg.T = arg.T or 120 --tempo
-arg.R = arg.R or 0.2
-arg.L = arg.L or 0.2
+arg.R = arg.R or 0.5
+arg.L = arg.L or 0.5
+arg.l = arg.l or 1
+arg.e = arg.e or 1
 arg.pitP = arg.pitP or 0.5
 arg.pitV = arg.pitV or 0.5
 
