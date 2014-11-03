@@ -32,7 +32,7 @@ end
 ----------------------------------------------------------------------------
 
 --Load yor samples!!!!!
-local dir = ""---- Your path!
+local dir = "../Samples/"---- Your path!
 local kic = proAudio.sampleFromFile(dir.."kick.ogg")
 local sna = proAudio.sampleFromFile(dir.."snare.ogg") 
 local ope = proAudio.sampleFromFile(dir.."openhat.ogg")
