@@ -89,7 +89,7 @@ end
 r = {}
 -----------------------------------------------------------------
 -- Linear sequencing
-function r:q(patrones,tono,dino,dur,vol1,vol2,dis,pit)
+function r.q(patrones,tono,dino,dur,vol1,vol2,dis,pit)
   dis = dis or 0
   pit = pit or 0.5
  rpattern(patrones,1,tono,dino,dur,vol1,vol2,dis,pit)
@@ -97,15 +97,12 @@ function r:q(patrones,tono,dino,dur,vol1,vol2,dis,pit)
 
 ---------------------------------------------------------------------------
 -- A pure sampler
-function r:p(tipo)
+function sampler(tipo)
 tipo.dis = tipo.dis or 0
 tipo.pitch = tipo.pitch or 0.5 
-local x
-if tipo.t == 'w' then x = ".wav"
-elseif tipo.t == 'o' then x = ".ogg"
-end
-local sample = proAudio.sampleFromFile(dir..tipo.s..x)
-proAudio.soundPlay(sample,tipo.L,tipo.R,tipo.dis,tipo.pitch)
+local direc = "../Samples/Sounds/"
+local sample = proAudio.sampleFromFile(direc..tipo.s..".ogg")
+sonido = proAudio.soundPlay(sample,tipo.L,tipo.R,tipo.dis,tipo.pitch)
 end
 ----------------------------------------------------------------------------
 -- Loop
@@ -144,31 +141,6 @@ for q = 0, arg.l do
   end
 end
 --------------------------------------------------------------------
---Non-linear sampler
-function defP(u)
-  u.L = u.L or 0.2
-  u.R = u.R or 0.2
-  u.W = u.W or 0.5 --wait1
-  u.A = u.A or 0.5 --wait2
-  u.h = u.h or 0 --shift1
-  u.i = u.i or 0 --shift2
-  u.I = u.I or 0.5 --pitch1
-  u.C = u.C or 0.5 --pitch2
-  u.D = u.D or 0 --disparity
-  u.S = u.S or 0 --disparity2
-  
-  for o = 0, u.l do
-      for m = 0, u.e do
-            if m == u.e then r:p(u.y--[[formato]],u.N--[[nombre]],u.L,u.R,u.D,u.I+(o*u.h/10))
-        w(u.W)
-      elseif m < u.e then r:p(u.y,u.N,u.L,u.R,u.S,u.C+(o*u.i/10))
-       w(u.A)
-      end
-       end
-     end
-  end
-----------------------------------------------------------------------------
-
 --a[rand(#a))] usage example
 function chos()
  local samples = {'A','B','C','D','E','F','G','#','$','%','&','+','~','°','@',';'}
