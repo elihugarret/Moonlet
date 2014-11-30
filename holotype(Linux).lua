@@ -123,6 +123,7 @@ arg.i = arg.i or 0 -- shift2
 arg.u = arg.u or vR(1,1,100,1,1) --ugen
 arg.g = arg.g or vR(1,1,100,1,1) --ugenVar
 arg.T = arg.T or 120 --tempo
+arg.T2 = arg.T2 or arg.T
 arg.R = arg.R or 0.5
 arg.L = arg.L or 0.5
 arg.l = arg.l or 1
@@ -132,9 +133,9 @@ arg.pitV = arg.pitV or 0.5
 
 for q = 0, arg.l do
     for i = 0, arg.e do
-  if i == arg.e then r:q({arg.P},arg.c+q*(arg.h),
+  if i == arg.e then r:q({arg.V},arg.c+q*(arg.h),
                                     arg.g,t(arg.T),arg.R,arg.L,arg.disP,arg.pitP) 
-     elseif i < arg.e then r:q({arg.V},arg.s+q*(arg.i),
+     elseif i < arg.e then r:q({arg.P},arg.s+q*(arg.i),
                                 arg.u,t(arg.T),arg.R,arg.L,arg.disV,arg.pitV)
       end
     end
