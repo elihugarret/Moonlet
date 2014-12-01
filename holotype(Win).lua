@@ -134,7 +134,7 @@ arg.pitV = arg.pitV or 1
 for q = 0, arg.l do
     for i = 0, arg.e do
   if i == arg.e then r:q({arg.V},arg.c+q*(arg.h),
-                                    arg.g,t(arg.T),arg.R,arg.L,arg.disP,arg.pitP) 
+                                    arg.g,t(arg.T2),arg.R,arg.L,arg.disP,arg.pitP) 
      elseif i < arg.e then r:q({arg.P},arg.s+q*(arg.i),
                                 arg.u,t(arg.T),arg.R,arg.L,arg.disV,arg.pitV)
       end
