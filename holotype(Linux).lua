@@ -34,7 +34,7 @@ end
 ---------------------------------------------------------------------------
 
 --Load yor samples!!!!!
-local dir = "../Samples/Vint/"
+local dir = "../Samples/"
 local kic = proAudio.sampleFromFile(dir.."kick.ogg")
 local sna = proAudio.sampleFromFile(dir.."snare.ogg") 
 local ope = proAudio.sampleFromFile(dir.."openhat.ogg")
