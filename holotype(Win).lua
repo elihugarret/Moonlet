@@ -1,9 +1,9 @@
-﻿--Holotype (Helix Version)
+--Holotype (Helix Version)
 
 --Written by Elihu Garret 2013-2014
 --Sequencers, pseudo-samplers and a lot of stuff.
 require "microCode"
-require "allen-helix"
+require "allen"
 math.randomseed(os.clock())
 rand = math.random
 
@@ -29,10 +29,12 @@ w(time)
 proAudio.destroy()
 os.exit()
 end
-----------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------
 
 --Load yor samples!!!!!
-local dir = "../Samples/"---- Your path!
+local dir = "../Samples/"
 local kic = proAudio.sampleFromFile(dir.."kick.ogg")
 local sna = proAudio.sampleFromFile(dir.."snare.ogg") 
 local ope = proAudio.sampleFromFile(dir.."openhat.ogg")
@@ -59,6 +61,7 @@ local snap = proAudio.sampleFromFile(dir.."sna.ogg")
 function rpattern(patrones,i,tono,dino,dur,vol1,vol2,dis,pit)
     pit = pit or 1
  for w, beat in ipairs(patrones[i]) do
+ 
        if beat == 'x' then  proAudio.soundPlay(kic,vol1,vol2,dis,pit)
    elseif beat == 'o' then proAudio.soundPlay(sna,vol1,vol2,dis,pit)  
    elseif beat == '*' then proAudio.soundPlay(hat,vol1,vol2,dis,pit)
@@ -79,8 +82,9 @@ function rpattern(patrones,i,tono,dino,dur,vol1,vol2,dis,pit)
    elseif beat == 'E' then proAudio.soundPlay(pan,vol1,vol2,dis,pit)
    elseif beat == 'F' then proAudio.soundPlay(woo,vol1,vol2,dis,pit)
    elseif beat == 'G' then proAudio.soundPlay(snap,vol1,vol2,dis,pit)
-   elseif beat == ' ' then play(1,vR(1,1,1,1),1,dur,0,0)
-   else play(tono,dino,beat:byte(1,-1),dur,vol1/10,vol2/10)
+ elseif beat == ' ' then play(1,vR(1,1,1,1),1,dur,0,0)
+   elseif type(beat) == 'number' then play(tono,dino,beat,dur,vol1/10,vol2/10,dis)
+   else play(tono,dino,beat:byte(1,-1),dur,vol1/10,vol2/10,dis)
    end 
  end
 end
@@ -91,15 +95,15 @@ r = {}
 -- Linear sequencing
 function r.q(patrones,tono,dino,dur,vol1,vol2,dis,pit)
   dis = dis or 0
-  pit = pit or 1
+  pit = pit or 0.5
  rpattern(patrones,1,tono,dino,dur,vol1,vol2,dis,pit)
  end
 
 ---------------------------------------------------------------------------
 -- A pure sampler
-function sampler(tipo)
+function sample(tipo)
 tipo.dis = tipo.dis or 0
-tipo.pitch = tipo.pitch or 1 
+tipo.pitch = tipo.pitch or 1
 local direc = "../Samples/Sounds/"
 local sample = proAudio.sampleFromFile(direc..tipo.s..".ogg")
 sonido = proAudio.soundPlay(sample,tipo.L,tipo.R,tipo.dis,tipo.pitch)
@@ -114,7 +118,7 @@ function loop(z,volL,volR,dis,pitch)
  end
 ----------------------------------------------------------------------------
 --Non-linear sequencing
-function def(arg)
+function seq(arg)
 --[[lenght, every, variationPattern,shift1,dinoVar,tempo,volL,volR,loop--]]
 arg.c = arg.c or 24 --scale2
 arg.s = arg.s or 24 --scale1
@@ -124,24 +128,27 @@ arg.u = arg.u or vR(1,1,100,1,1) --ugen
 arg.g = arg.g or vR(1,1,100,1,1) --ugenVar
 arg.T = arg.T or 120 --tempo
 arg.T2 = arg.T2 or arg.T
-arg.R = arg.R or 0.5
-arg.L = arg.L or 0.5
-arg.l = arg.l or 1
-arg.e = arg.e or 1
+arg.R = arg.R or 0.2
+arg.L = arg.L or 0.2
 arg.pitP = arg.pitP or 1
 arg.pitV = arg.pitV or 1
+arg.l = arg.l or 1
+arg.e = arg.e or 1
 
 for q = 0, arg.l do
     for i = 0, arg.e do
-  if i == arg.e then r:q({arg.V},arg.c+q*(arg.h),
-                                    arg.g,t(arg.T2),arg.R,arg.L,arg.disP,arg.pitP) 
-     elseif i < arg.e then r:q({arg.P},arg.s+q*(arg.i),
-                                arg.u,t(arg.T),arg.R,arg.L,arg.disV,arg.pitV)
+  if i == arg.e then r.q({arg.V},arg.c+q*(arg.h),
+                                    arg.g,t(arg.T2),arg.R,arg.L,arg.disV,arg.pitV) 
+     elseif i < arg.e then r.q({arg.P},arg.s+q*(arg.i),
+                                arg.u,t(arg.T),arg.R,arg.L,arg.disP,arg.pitP)
       end
     end
   end
 end
 --------------------------------------------------------------------
+
+----------------------------------------------------------------------------
+
 --a[rand(#a))] usage example
 function chos()
  local samples = {'A','B','C','D','E','F','G','#','$','%','&','+','~','°','@',';'}
@@ -168,3 +175,6 @@ end
         return(table.concat(pass,' ')) 
 end
 ----------------------------------------
+function stop()
+  return proAudio.soundStop(sonido)
+  end
