@@ -3,7 +3,7 @@
 --Written by Elihu Garret 2013-2014
 --Sequencers, pseudo-samplers and a lot of stuff.
 require "microCode"
-require "allen"
+require "allen-helix"
 math.randomseed(os.clock())
 rand = math.random
 
