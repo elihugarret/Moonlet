@@ -1,4 +1,4 @@
-Holotype-Helix
+Moonlet
 ==============
 
-Live coding with Lua.
+Experimental live coding libraries in Lua and MoonScript.
