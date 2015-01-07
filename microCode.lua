@@ -1,12 +1,16 @@
+--Generators
 --Elihu Garrett (2013-2014)
 
-require("proAudioRt")--motor de audio
+require "proAudioRt"
 
-if not proAudio.create() then os.exit(1) end
+if not proAudio.create() then os.exit() end
 
-function play(tono,sample, pitch, duration, volumeL, volumeR)
-	local scale = 2^(pitch/tono)
-	local sound = proAudio.soundLoop(sample, volumeL, volumeR, 0, scale)
+function play(tono,sample, pitch, duration, volumeL, volumeR,dis)
+	if type(pitch) == "number" then pitch = pitch
+    else pitch = pitch:byte(1,-1) 
+  end 
+  local scale = 2^(pitch/tono)
+	local sound = proAudio.soundLoop(sample, volumeL, volumeR, dis, scale)
   proAudio.sleep(duration)
   proAudio.soundStop(sound or 0.1)
 end
@@ -25,7 +29,7 @@ end
 ---------------------------------------------
  
  --Sound generators
- function sS(freq, duration, sampleRate,f,m,r)
+ function vS(freq, duration, sampleRate,f,m,r)
 	local data = {}
 	for i = 1,duration*sampleRate do
 		data[i] = math.random((i*math.cos(math.sin(f)))*(freq/math.random(m,r))/sampleRate,-19) 
@@ -33,7 +37,7 @@ end
 	return proAudio.sampleFromMemory(data, sampleRate)
 end
 
-function aX(freq, duration, sampleRate,q,w)
+function vX(freq, duration, sampleRate,q,w)
 	local data = {}
 	for i = 1,duration*sampleRate do
 		data[i] = math.tan( ((i*(math.pi*math.cosh(q)))*freq/sampleRate)*math.cos(w))
@@ -49,7 +53,7 @@ function vR(freq, duration, sampleRate,v)
 	return proAudio.sampleFromMemory(data, sampleRate)
  end
 
-function pS (freq, duration , sampleRate)
+function  vP(freq, duration , sampleRate)
   local data = {}
   for i = 1, duration*sampleRate do
     data[i] = math.atan2(-4,6)* (i*math.pi)*(freq/(sampleRate)*math.pi)
@@ -57,7 +61,7 @@ function pS (freq, duration , sampleRate)
   return proAudio.sampleFromMemory(data, sampleRate)
 end
 
-function mR (freq, duration, sampleRate,x,y,z)
+function vM (freq, duration, sampleRate,x,y,z)
   local data = {}
   for i = 1, duration*sampleRate do
     data[i] = math.tan(x*(math.cosh(math.pi,y)*(i*math.pi)*(freq/(sampleRate)*z)))
@@ -66,7 +70,7 @@ function mR (freq, duration, sampleRate,x,y,z)
  end
  
  --Special oscillator 
- --Ex. osc()%10 
+ --Example: osc()%10 
 function osc(freq, duration, sampleRate)
   freq = freq or 440
   duration = duration or 1
