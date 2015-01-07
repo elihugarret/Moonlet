@@ -1,5 +1,5 @@
-require "holotype"
+require "moonlet"
 while true do
-require "htlang"
-package.loaded.htlang = nil
+  require "luna"
+  package.loaded.luna = nil
 end
