@@ -75,15 +75,15 @@ local mtstr = getmetatable('')
 
 function mtstr.__add(a,b) -- Randomize 2 strings instead of concat. Metamethod by Elihú Garrett (2014)
   math.randomseed(os.clock())
- local fus = {}
+  local fus = {}
   local tbl = chars(a..b)
-for c, v in ipairs(tbl) do
+  for c, v in ipairs(tbl) do
     table.insert(fus,math.random(c),v)  
+  end
+  return fus 
 end
-return fus 
-end
-
-function mtstr.__mul(a,b) return type(a) == 'string' and a:rep(b) or b:rep(a) end
+--Uncomment this if you are using Lua. Comment if you are using MoonScript
+--function mtstr.__mul(a,b) return type(a) == 'string' and a:rep(b) or b:rep(a) end
 function mtstr.__pow(a,b) return a:rep(b^#a) end
 function mtstr.__div(a,b) return chop(a,b) end
 function mtstr.__unm(a) return a:reverse() end
@@ -335,36 +335,16 @@ function substitute(str,value) return (str:gsub('%${*([%w]+)}*',value)) end
 function includes(str,sub) return (str:find(sub)) and true or false end
 
 --- Converts a given string to an array of chars
--- <br/><em>Aliased as `explode`.</em>.
+-- <br/><em>Aliased as `sound`.</em>.
 -- @tparam string str a string
 -- @treturn array an array of chars
 -- @see _.explode
-function chars(str)
-  local b = str:gsub('|','')
+function chars(var)
   local _chars = {}
-  for char in b:gmatch('.') do t_insert(_chars,char) end
+  for char in var:gmatch('.') do t_insert(_chars,char) end   
   return #_chars>0 and _chars or nil
 end
 
-function rchars(str)
-  local b = str:gsub('|','')
-  return b + ''
-end
-explode = chars
--------------------------------------------------------------------
-
-function sound(str)
-local b = str:gsub('|','')
-  local _chars = {}
-  for char in b:gmatch('.') do t_insert(_chars,char) end
-  return #_chars>0 and _chars or nil
-end
-
-function rsound(str)
-local b = str:gsub('|','')
-return b + ''
-
-end
 -------------------------------------------------------------------
 
 --- Checks if a given string contains only alphabetic characters
@@ -795,10 +775,12 @@ end
 --Choose function (similar to .choose mehod in SuperCollider)
 --Returns a random character.
 -- Added by Elihú Garrett (2014)
+--Remember string(rand(#),9)
 function choose(...)
- local var = {...}
-  return var[math.random(#var)]
+local var = {...}
+return var[math.random(#var)]
 end
+
 --- Imports library functions inside a given context or the global environment.
 -- @tparam[opt] table context a context. Defaults to `_G` (global environment) when not given.
 -- @tparam[optchain] boolean noConflict Skips function import in case its key already exists in the given context
