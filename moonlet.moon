@@ -86,6 +86,23 @@ export clear = (time) ->
  os.exit!
  return
 
+--Rotate a string.
+export rotate = (s,n) ->
+ local p
+ if n>0
+  p="("..string.rep("%S+",n,"%s+")..")".."(.-)$"
+ else
+  n=-n
+  p="^(.-)%s+".."("..string.rep("%S+",n,"%s+").."%s*)$"
+ 
+ return (s:gsub(p,"%2 %1"))
+
+--Choose function (similar to .choose method in SuperCollider)
+--Remember string(rand(#),9)
+export choose = (...) ->
+ local var = {...}
+ return var[math.random(#var)]
+
 -- .ogg player  [proAudioRt cant handle high quality .wav files]
 export sample = (tipo) ->
  tipo.disparity = tipo.disparity or 0
