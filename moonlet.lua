@@ -14,8 +14,9 @@ local yield = coroutine.yield
 local soundPlay = proAudio.soundPlay
 local fromFile = proAudio.sampleFromFile
 local insert = table.insert
+local concat = table.concat
 --Load your samples
-local dir = "../Samples/Glitch/"
+local dir = "../Samples/"
 local kic = fromFile(dir.."kick.ogg")
 local sna = fromFile(dir.."snare.ogg") 
 local ope = fromFile(dir.."openhat.ogg")
@@ -48,7 +49,7 @@ local bank = {
   ['@'] = air,
   ['%'] = ice,
   ['~'] = kit,
-  ['°'] = met,
+  ['!'] = met,
   [';'] = tin,
   A = tam,
   B = mar,
@@ -75,16 +76,16 @@ end
 ----
 --Relative tempo
 function t(bpm)
- local x=30/bpm
+  local x=30/bpm
   return x
 end
 ----
 --Like SC .clear
 function clear(time)
- local destroy = proAudio.destroy
- sleep(time)
- destroy()
- os.exit()
+  local destroy = proAudio.destroy
+  sleep(time)
+  destroy()
+  os.exit()
 end
 ----
 -- .ogg player  [proAudioRt can't handle high quality .wav files]
@@ -111,15 +112,15 @@ end
 --Choose function (similar to .choose method in SuperCollider)
 --Remember string(rand(#),9)
 function choose(...)
-local var = {...}
-return var[math.random(#var)]
+  local var = {...}
+  return var[math.random(#var)]
 end
 
 --Like choose() for "valid" characters
 function choose2()
- local samples = {'A','B','C','D','E','F','G','#','$','%','&','+','~','°','@',';'}
- local choose = random(#samples)
- return samples[choose] 
+  local samples = {'A','B','C','D','E','F','G','#','$','%','&','+','~','°','@',';'}
+  local choose = random(#samples)
+  return samples[choose] 
 end
 ----
 -- Shuffle
@@ -152,11 +153,17 @@ end
 ----
 --String to array of chars method
 sound = {}
-function string.sound(self,var)
+function string.sound(self,var) 
   local tabla = {}
   for char in self:gmatch('.') do insert(tabla,char) end  
   return var == 'r' and shuffle(tabla) or #tabla>0 and tabla or nil 
 end
+----
+glue = {}
+ function string.glue(self,r)
+  local step = concat(self:sound(r),' ')..' '
+  return step:sound()
+ end
 ----
 --Pseudorandom string generator
  function RSG(str,pattern,s, l)
@@ -206,15 +213,29 @@ function seq.c(var)
   
   local par = wrap(function (patrones,tono,dino,temp,vol1,vol2,dis,pit)
     while true do
-      rpattern(patrones,tono,dino,temp,vol1,vol2,dis,pit)
+      pit = pit or 0.5
+      dis = dis or 0
+      for i, v in ipairs(patrones) do
+        if type(bank[v]) == "function" then bank[v](temp)
+        elseif type(bank[v]) == "nil" then play(tono,dino,v,temp,vol1/10,vol2/10,dis)
+        else soundPlay(bank[v],vol1,vol2,dis,pit)
+        end
       yield()
+      end   
     end
   end
 )
   local arp = wrap(function (patrones,tono,dino,temp,vol1,vol2,dis,pit)
     while true do
-      rpattern(patrones,tono,dino,temp,vol1,vol2,dis,pit)
-      yield()
+      pit = pit or 0.5
+      dis = dis or 0
+      for i, v in ipairs(patrones) do
+        if type(bank[v]) == "function" then bank[v](temp)
+        elseif type(bank[v]) == "nil" then play(tono,dino,v,temp,vol1/10,vol2/10,dis)
+        else soundPlay(bank[v],vol1,vol2,dis,pit)
+        end
+        yield()
+      end   
     end
   end
 )
