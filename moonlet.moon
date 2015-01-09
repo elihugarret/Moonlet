@@ -15,7 +15,7 @@ yield = coroutine.yield
 soundPlay = proAudio.soundPlay
 fromFile = proAudio.sampleFromFile
 insert = table.insert
-
+concat = table.concat
 --Load your samples
 
 dir = "../Samples/"
@@ -52,7 +52,7 @@ bank =
  ['@']: air
  ['%']: ice
  ['~']: kit
- ['°']: met
+ ['!']: met
  [';']: tin
  A: tam
  B: mar
@@ -100,7 +100,7 @@ export rotate = (s,n) ->
 --Choose function (similar to .choose method in SuperCollider)
 --Remember string(rand(#),9)
 export choose = (...) ->
- local var = {...}
+ var = {...}
  return var[math.random(#var)]
 
 -- .ogg player  [proAudioRt cant handle high quality .wav files]
@@ -159,6 +159,10 @@ string.sound = (var) =>
   insert tabla,char
  var == 'r' and shuffle(tabla) or #tabla>0 and tabla or nil
 
+export glue = {}
+string.glue = (r) =>
+ step = concat(@sound(r),' ')..' '
+ return step\sound!
 --Sequencer
 export rpattern = (patrones,tono,dino,temp,vol1,vol2,dis,pit) ->
  pit = pit or 0.5
@@ -183,17 +187,37 @@ seq.c = (var) ->
  var.speed = var.speed or 120
  var.speed2 = var.speed2 or var.speed 
  var.L = var.L or 0.2
- var.L2 = var.L2 or var.L
+ var.L2 = var.L2 or 0.2
  var.R = var.R or 0.2
- var.R2 = var.R2 or var.R
+ var.R2 = var.R2 or 0.2
  par = wrap((patrones,tono,dino,temp,vol1,vol2,dis,pit) ->
   while true
-   rpattern(patrones,tono,dino,temp,vol1,vol2,dis,pit)
-   yield!)
- arp =wrap((patrones,tono,dino,temp,vol1,vol2,dis,pit) ->
+   pit = pit or 0.5
+   dis = dis or 0
+   for i, v in ipairs patrones
+    switch type bank[v]
+     when "function"
+      bank[v](temp)
+     when "nil"
+      play(tono,dino,v,temp,vol1/10,vol2/10,dis)
+     else
+      soundPlay(bank[v],vol1,vol2,dis,pit)
+    yield!
+  return)
+ arp = wrap((patrones,tono,dino,temp,vol1,vol2,dis,pit) ->
   while true
-   rpattern(patrones,tono,dino,temp,vol1,vol2,dis,pit)
-   yield!)
+   pit = pit or 0.5
+   dis = dis or 0
+   for i, v in ipairs patrones
+    switch type bank[v]
+     when "function"
+      bank[v](temp)
+     when "nil"
+      play(tono,dino,v,temp,vol1/10,vol2/10,dis)
+     else
+      soundPlay(bank[v],vol1,vol2,dis,pit)
+    yield!
+  return)
  local x
  if #var.pattern >= #var.pattern2
   x = #var.pattern
