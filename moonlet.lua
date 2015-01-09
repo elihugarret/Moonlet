@@ -15,7 +15,7 @@ local soundPlay = proAudio.soundPlay
 local fromFile = proAudio.sampleFromFile
 local insert = table.insert
 --Load your samples
-local dir = "../Samples/"
+local dir = "../Samples/Glitch/"
 local kic = fromFile(dir.."kick.ogg")
 local sna = fromFile(dir.."snare.ogg") 
 local ope = fromFile(dir.."openhat.ogg")
@@ -96,6 +96,25 @@ function sample(tipo)
   sonido = soundPlay(sample,tipo.L,tipo.R,tipo.disparity,tipo.pitch)
 end
 ----
+--Rotate a string.
+function rotate(s,n)
+    local p
+    if n>0 then
+        p="("..string.rep("%S+",n,"%s+")..")".."(.-)$"
+    else
+        n=-n
+        p="^(.-)%s+".."("..string.rep("%S+",n,"%s+").."%s*)$"
+    end
+    return (s:gsub(p,"%2 %1"))
+end
+
+--Choose function (similar to .choose method in SuperCollider)
+--Remember string(rand(#),9)
+function choose(...)
+local var = {...}
+return var[math.random(#var)]
+end
+
 --Like choose() for "valid" characters
 function choose2()
  local samples = {'A','B','C','D','E','F','G','#','$','%','&','+','~','°','@',';'}
