@@ -759,28 +759,6 @@ function statistics(str,pat)
   return _rep
 end
 
-
---Rotation function -- Added by Elihú Garrett(2014) 
-function rot(s,n)
-    local p
-    if n>0 then
-        p="("..string.rep("%S+",n,"%s+")..")".."(.-)$"
-    else
-        n=-n
-        p="^(.-)%s+".."("..string.rep("%S+",n,"%s+").."%s*)$"
-    end
-    return (s:gsub(p,"%2 %1"))
-end
-
---Choose function (similar to .choose mehod in SuperCollider)
---Returns a random character.
--- Added by Elihú Garrett (2014)
---Remember string(rand(#),9)
-function choose(...)
-local var = {...}
-return var[math.random(#var)]
-end
-
 --- Imports library functions inside a given context or the global environment.
 -- @tparam[opt] table context a context. Defaults to `_G` (global environment) when not given.
 -- @tparam[optchain] boolean noConflict Skips function import in case its key already exists in the given context
