@@ -7,7 +7,11 @@ require "allen"
 --globals
 math.randomseed(os.clock())
 random = math.random --a[random(#a)] usage example
-sleep = proAudio.sleep
+local clock = os.clock
+function sleep(n) 
+  local t0 = clock()
+  while clock() - t0 <= n do end
+end
 --locals
 local wrap = coroutine.wrap
 local yield = coroutine.yield
