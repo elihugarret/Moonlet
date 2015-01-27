@@ -7,7 +7,12 @@ require "allen"
 
 math.randomseed(os.clock!)
 export random = math.random --example a[random(#a)]
-export sleep = proAudio.sleep
+export sleep = (n) -> 
+ t0 = clock!
+ time = clock! - t0
+ while time <= n
+  return
+ 
 
 --locals
 wrap = coroutine.wrap
