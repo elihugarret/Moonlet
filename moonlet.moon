@@ -7,17 +7,17 @@ require "allen"
 
 math.randomseed(os.clock!)
 export random = math.random --example a[random(#a)]
+clock = os.clock
 export sleep = (n) -> 
  t0 = clock!
  time = clock! - t0
  while time <= n
   return
  
-
 --locals
-wrap = coroutine.wrap
-yield = coroutine.yield
-soundPlay = proAudio.soundPlay
+export wrap = coroutine.wrap
+export yield = coroutine.yield
+export soundPlay = proAudio.soundPlay
 fromFile = proAudio.sampleFromFile
 insert = table.insert
 concat = table.concat
@@ -45,7 +45,7 @@ pan = fromFile(dir.."pan.ogg")
 woo = fromFile(dir.."woo.ogg")
 snap = fromFile(dir.."sna.ogg")
 
-bank =
+export bank = {
  x: kic
  o: sna
  ['*']: hat
@@ -67,7 +67,7 @@ bank =
  F: woo
  G: snap
  [' ']: (dur) -> play(1,vR(1,1,1,1),1,dur,0,0)
-
+}
 --isTable
 isTable = (t) -> type t == "table"
 
