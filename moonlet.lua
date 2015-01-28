@@ -13,9 +13,9 @@ function sleep(n)
   while clock() - t0 <= n do end
 end
 --locals
-local wrap = coroutine.wrap
-local yield = coroutine.yield
-local soundPlay = proAudio.soundPlay
+wrap = coroutine.wrap
+yield = coroutine.yield
+soundPlay = proAudio.soundPlay
 local fromFile = proAudio.sampleFromFile
 local insert = table.insert
 local concat = table.concat
@@ -41,7 +41,7 @@ local req = fromFile(dir.."req.ogg")
 local pan = fromFile(dir.."pan.ogg")
 local woo = fromFile(dir.."woo.ogg")
 local snap = fromFile(dir.."sna.ogg")
-local bank = {
+bank = {
   x = kic,
   o = sna,
   ['*'] = hat,
