@@ -1,11 +1,12 @@
 --Generators
 --Elihu Garrett (2015)
 
-require "proAudioRt"
+local proAudio = require "proAudioRt"
+local Gen = {}
 
 if not proAudio.create() then os.exit() end
 
-function play(tono,sample, pitch, duration, volumeL, volumeR,dis)
+function Gen.play(tono,sample, pitch, duration, volumeL, volumeR,dis)
 	if type(pitch) == "number" then pitch = pitch
     else pitch = pitch:byte(1,-1) 
   end 
@@ -16,7 +17,7 @@ function play(tono,sample, pitch, duration, volumeL, volumeR,dis)
 end
 
 --Still under development
-function playChord(tono, sample, pitch, duration, volumeL, volumeR, note1, note2)
+function Gen.playChord(tono, sample, pitch, duration, volumeL, volumeR, note1, note2)
   local scale = 2^(pitch/tono)
   local sound = proAudio.soundLoop(sample,volumeL, volumeR, 0, scale)
   local sound1 = proAudio.soundLoop(sample,volumeL, volumeR, 0, scale+note1)
@@ -29,7 +30,7 @@ end
 ---------------------------------------------
  
  --Sound generators
- function vS(freq, duration, sampleRate,f,m,r)
+ function Gen.vS(freq, duration, sampleRate,f,m,r)
 	local data = {}
 	for i = 1,duration*sampleRate do
 		data[i] = math.random((i*math.cos(math.sin(f)))*(freq/math.random(m,r))/sampleRate,-19) 
@@ -37,7 +38,7 @@ end
 	return proAudio.sampleFromMemory(data, sampleRate)
 end
 
-function vX(freq, duration, sampleRate,q,w)
+function Gen.vX(freq, duration, sampleRate,q,w)
 	local data = {}
 	for i = 1,duration*sampleRate do
 		data[i] = math.tan( ((i*(math.pi*math.cosh(q)))*freq/sampleRate)*math.cos(w))
@@ -45,7 +46,7 @@ function vX(freq, duration, sampleRate,q,w)
 	return proAudio.sampleFromMemory(data, sampleRate)
 end
 
-function vR(freq, duration, sampleRate,v)
+function Gen.vR(freq, duration, sampleRate,v)
 	local data = {}
 	for i = 1,duration*sampleRate do
 		data[i] = math.cos( ((i*math.pi)*freq/sampleRate)*math.pi*v)
@@ -53,7 +54,7 @@ function vR(freq, duration, sampleRate,v)
 	return proAudio.sampleFromMemory(data, sampleRate)
  end
 
-function  vP(freq, duration , sampleRate)
+function  Gen.vP(freq, duration , sampleRate)
   local data = {}
   for i = 1, duration*sampleRate do
     data[i] = math.atan2(-4,6)* (i*math.pi)*(freq/(sampleRate)*math.pi)
@@ -61,7 +62,7 @@ function  vP(freq, duration , sampleRate)
   return proAudio.sampleFromMemory(data, sampleRate)
 end
 
-function vM (freq, duration, sampleRate,x,y,z)
+function Gen.vM (freq, duration, sampleRate,x,y,z)
   local data = {}
   for i = 1, duration*sampleRate do
     data[i] = math.tan(x*(math.cosh(math.pi,y)*(i*math.pi)*(freq/(sampleRate)*z)))
@@ -71,7 +72,7 @@ function vM (freq, duration, sampleRate,x,y,z)
  
  --Special oscillator 
  --Example: osc()%10 
-function osc(freq, duration, sampleRate)
+function Gen.osc(freq, duration, sampleRate)
   freq = freq or 440
   duration = duration or 1
   sampleRate = sampleRate or 4100
@@ -81,3 +82,6 @@ function osc(freq, duration, sampleRate)
   end
   return proAudio.sampleFromMemory(data, sampleRate)
  end
+ 
+
+return Gen
