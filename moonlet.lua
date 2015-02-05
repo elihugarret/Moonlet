@@ -1,21 +1,24 @@
 --Moonlet
 --Lua/MoonScript experimental modules for audio livecoding
---Written by Elihu Garret, Mexico,2015
+--Written by Elihu Garret, Mexico 2015
 
-require "gen"
-require "allen"
+local Gen = require "gen"
+local allen = require "allen"
+
+local moont = {}
 --globals
 math.randomseed(os.clock())
 random = math.random --a[random(#a)] usage example
+wrap = coroutine.wrap
+yield = coroutine.yield
+soundPlay = proAudio.soundPlay
+--
 local clock = os.clock
-function sleep(n) 
+function moont.sleep(n) 
   local t0 = clock()
   while clock() - t0 <= n do end
 end
 --locals
-wrap = coroutine.wrap
-yield = coroutine.yield
-soundPlay = proAudio.soundPlay
 local fromFile = proAudio.sampleFromFile
 local insert = table.insert
 local concat = table.concat
@@ -62,7 +65,7 @@ bank = {
   E = pan,
   F = woo,
   G = snap,
-  [' '] = function (dur) play(1,vR(1,1,1,1),1,dur,0,0) end,
+  [' '] = function (dur) Gen.play(1,Gen.vR(1,1,1,1),1,dur,0,0) end,
 }
 ----
 -- isTable
@@ -79,13 +82,21 @@ local function each(list, f, ...)
 end
 ----
 --Relative tempo
-function t(bpm)
+function moont.t(bpm)
   local x=30/bpm
   return x
 end
 ----
+--Reverse a table
+function moont.rev()
+  local a = {}
+  for i = #tab,1,-1 do
+    insert(a,tab[i])
+  end
+end 
+----
 --Like SC .clear
-function clear(time)
+function moont.clear(time)
   local destroy = proAudio.destroy
   sleep(time)
   destroy()
@@ -93,7 +104,7 @@ function clear(time)
 end
 ----
 -- .ogg player  [proAudioRt can't handle high quality .wav files]
-function sample(tipo)
+function moont.sample(tipo)
   tipo.disparity = tipo.disparity or 0
   tipo.pitch = tipo.pitch or 0.5 
   local direc = "../Samples/Sounds/"
@@ -102,7 +113,7 @@ function sample(tipo)
 end
 ----
 --Rotate a string.
-function rotate(s,n)
+function moont.rotate(s,n)
     local p
     if n>0 then
         p="("..string.rep("%S+",n,"%s+")..")".."(.-)$"
@@ -115,20 +126,20 @@ end
 
 --Choose function (similar to .choose method in SuperCollider)
 --Remember string(rand(#),9)
-function choose(...)
+function moont.choose(...)
   local var = {...}
   return var[math.random(#var)]
 end
 
 --Like choose() for "valid" characters
-function choose2()
+function moont.choose2()
   local samples = {'A','B','C','D','E','F','G','#','$','%','&','+','~','°','@',';'}
   local choose = random(#samples)
   return samples[choose] 
 end
 ----
 -- Shuffle
-function shuffle(list)
+function moont.shuffle(list)
    local shuffled = {}
   each(list,function(index,value)
               local randPos = math.floor(math.random()*index)+1
@@ -139,7 +150,7 @@ function shuffle(list)
 end
 ----
 -- Range
-function range(...)
+function moont.range(...)
   local arg = {...}
   local start,stop,step
   if #arg==0 then return {}
@@ -156,21 +167,21 @@ function range(...)
 end
 ----
 --String to array of chars method
-sound = {}
-function string.sound(self,var) 
+
+function string:sound(var) 
   local tabla = {}
   for char in self:gmatch('.') do insert(tabla,char) end  
-  return var == 'r' and shuffle(tabla) or #tabla>0 and tabla or nil 
+  return var == 'r' and moont.shuffle(tabla) or #tabla>0 and tabla or nil 
 end
 ----
-glue = {}
- function string.glue(self,r)
+
+ function string:glue(r)
   local step = concat(self:sound(r),' ')..' '
   return step:sound()
  end
 ----
 --Pseudorandom string generator
- function RSG(str,pattern,s, l)
+ function moont.RSG(str,pattern,s, l)
           tble = str:gsub(' ',pattern)
        local char = tble/rand(#tble)
               pass = {}
@@ -189,25 +200,24 @@ glue = {}
 end
 ----
 --Sequencer
-function rpattern(patrones,tono,dino,temp,vol1,vol2,dis,pit)
+function moont.rpattern(patrones,tono,dino,temp,vol1,vol2,dis,pit)
   pit = pit or 0.5
   dis = dis or 0
   for i, v in ipairs(patrones) do
     if type(bank[v]) == "function" then bank[v](temp)
-      elseif type(bank[v]) == "nil" then play(tono,dino,v,temp,vol1/10,vol2/10,dis)
+      elseif type(bank[v]) == "nil" then Gen.play(tono,dino,v,temp,vol1/10,vol2/10,dis)
       else soundPlay(bank[v],vol1,vol2,dis,pit)
     end
   end
 end
-----
-seq = {}
+
 --Sequencer + coroutines
-function seq.c(var)
+function moont.sec(var)
   local x
   var.scale = var.scale or 24
   var.scale2 = var.scale2 or 24
-  var.gen = var.gen or vR(1,1,100,1,1)
-  var.gen2 = var.gen2 or vR(1,1,100,1,1)
+  var.gen = var.gen or Gen.vR(1,1,100,1,1)
+  var.gen2 = var.gen2 or Gen.vR(1,1,100,1,1)
   var.speed = var.speed or 120
   var.speed2 = var.speed2 or var.speed 
   var.L = var.L or 0.2
@@ -221,7 +231,7 @@ function seq.c(var)
       dis = dis or 0
       for i, v in ipairs(patrones) do
         if type(bank[v]) == "function" then bank[v](temp)
-        elseif type(bank[v]) == "nil" then play(tono,dino,v,temp,vol1/10,vol2/10,dis)
+        elseif type(bank[v]) == "nil" then Gen.play(tono,dino,v,temp,vol1/10,vol2/10,dis)
         else soundPlay(bank[v],vol1,vol2,dis,pit)
         end
       yield()
@@ -235,7 +245,7 @@ function seq.c(var)
       dis = dis or 0
       for i, v in ipairs(patrones) do
         if type(bank[v]) == "function" then bank[v](temp)
-        elseif type(bank[v]) == "nil" then play(tono,dino,v,temp,vol1/10,vol2/10,dis)
+        elseif type(bank[v]) == "nil" then Gen.play(tono,dino,v,temp,vol1/10,vol2/10,dis)
         else soundPlay(bank[v],vol1,vol2,dis,pit)
         end
         yield()
@@ -245,20 +255,20 @@ function seq.c(var)
 )
   if #var.pattern >= #var.pattern2 then x = #var.pattern else x = #var.pattern2 end
   for i = 1,x do
-    par(var.pattern,var.scale,var.gen,t(var.speed),var.L,var.R,var.disparity,var.pitch)
-    arp(var.pattern2,var.scale2,var.gen2,t(var.speed2),var.L2,var.L2,var.disparity2,var.pitch2)
+    par(var.pattern,var.scale,var.gen,moont.t(var.speed),var.L,var.R,var.disparity,var.pitch)
+    arp(var.pattern2,var.scale2,var.gen2,moont.t(var.speed2),var.L2,var.L2,var.disparity2,var.pitch2)
   end
 end
 
 --Non-linear sequencing
-function seq.d(arg)
+function moont.seq(arg)
 --[[lenght, every, variationPattern,shift1,dinoVar,tempo,volL,volR,loop--]]
   arg.scale2 = arg.scale2 or 24
   arg.scale = arg.scale or 24
   arg.shift = arg.shift or 0
   arg.shift2 = arg.shift2 or 0
-  arg.gen = arg.gen or vR(1,1,100,1,1) 
-  arg.gen2 = arg.gen2 or vR(1,1,100,1,1) 
+  arg.gen = arg.gen or Gen.vR(1,1,100,1,1) 
+  arg.gen2 = arg.gen2 or Gen.vR(1,1,100,1,1) 
   arg.speed = arg.speed or 120 --tempo
   arg.speed2 = arg.speed2 or arg.speed
   arg.R = arg.R or 0.2
@@ -268,11 +278,13 @@ function seq.d(arg)
 
   for q = 0, arg.lenght do
     for i = 0, arg.every do
-      if i == arg.every then rpattern(arg.pattern2,arg.scale2+q*(arg.shift2),
-                                  arg.gen2,t(arg.speed2),arg.R,arg.L,arg.disparity2,arg.pitch2) 
-      elseif i < arg.every then rpattern(arg.pattern,arg.scale+q*(arg.shift),
-                                  arg.gen,t(arg.speed),arg.R,arg.L,arg.disparity,arg.pitch)
+      if i == arg.every then moont.rpattern(arg.pattern2,arg.scale2+q*(arg.shift2),
+                                  arg.gen2,moont.t(arg.speed2),arg.R,arg.L,arg.disparity2,arg.pitch2) 
+      elseif i < arg.every then moont.rpattern(arg.pattern,arg.scale+q*(arg.shift),
+                                  arg.gen,moont.t(arg.speed),arg.R,arg.L,arg.disparity,arg.pitch)
       end
     end
   end
 end
+
+return moont
