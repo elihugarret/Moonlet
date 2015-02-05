@@ -1,4 +1,4 @@
-require "moonlet"
+export moon = require "moonlet"
 while true
-  require "luna"
+  luna = require "luna"
   package.loaded.luna = nil
