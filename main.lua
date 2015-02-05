@@ -1,5 +1,5 @@
-require "moonlet"
+moon = require "moonlet"
 while true do
-  require "luna"
+  local luna = require "luna"
   package.loaded.luna = nil
 end
