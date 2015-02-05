@@ -1,9 +1,9 @@
 --Your code here!
 --Example:
 
-local a = "x*  o  x  *  "
+local a = "x * x * "
 
- seq.d{
-  pattern = a:sound()
-  pattern2 = a:sound('r') --randomize the string "a"
+moon.seq{
+  pattern = a:sound(),
+  pattern2 = a:sound()
  }
