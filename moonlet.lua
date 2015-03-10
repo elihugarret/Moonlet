@@ -87,11 +87,12 @@ function moont.t(bpm)
 end
 ----
 --Reverse a table
-function moont.rev()
+function moont.rev(tab)
   local a = {}
   for i = #tab,1,-1 do
     insert(a,tab[i])
   end
+  return a
 end 
 ----
 --Like SC .clear
@@ -200,7 +201,7 @@ end
 ----
 --Sequencer
 function moont.rpattern(patrones,tono,dino,temp,vol1,vol2,dis,pit)
-  pit = pit or 0.5
+  pit = pit or 1 --0.5 for linux users
   dis = dis or 0
   for i, v in ipairs(patrones) do
     if type(bank[v]) == "function" then bank[v](temp)
@@ -226,7 +227,7 @@ function moont.sec(var)
   
   local par = wrap(function (patrones,tono,dino,temp,vol1,vol2,dis,pit)
     while true do
-      pit = pit or 0.5
+      pit = pit or 1 --0.5 for linux users
       dis = dis or 0
       for i, v in ipairs(patrones) do
         if type(bank[v]) == "function" then bank[v](temp)
@@ -240,7 +241,7 @@ function moont.sec(var)
 )
   local arp = wrap(function (patrones,tono,dino,temp,vol1,vol2,dis,pit)
     while true do
-      pit = pit or 0.5
+      pit = pit or 1 --0.5 for Linux user
       dis = dis or 0
       for i, v in ipairs(patrones) do
         if type(bank[v]) == "function" then bank[v](temp)
