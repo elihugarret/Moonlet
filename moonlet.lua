@@ -21,6 +21,7 @@ end
 local fromFile = proAudio.sampleFromFile
 local insert = table.insert
 local concat = table.concat
+local tono = 1 --change this to 0.5 if you are on Linux
 --Load your samples
 local dir = "../Samples/"
 local kic = fromFile(dir.."kick.ogg")
@@ -106,7 +107,7 @@ end
 -- .ogg player  [proAudioRt can't handle high quality .wav files]
 function moont.sample(tipo)
   tipo.disparity = tipo.disparity or 0
-  tipo.pitch = tipo.pitch or 0.5 
+  tipo.pitch = tipo.pitch or tono 
   local direc = "../Samples/Sounds/"
   local sample = fromFile(direc..tipo.file..".ogg")
   sonido = soundPlay(sample,tipo.L,tipo.R,tipo.disparity,tipo.pitch)
@@ -201,7 +202,7 @@ end
 ----
 --Sequencer
 function moont.rpattern(patrones,tono,dino,temp,vol1,vol2,dis,pit)
-  pit = pit or 1 --0.5 for linux users
+  pit = pit or tono
   dis = dis or 0
   for i, v in ipairs(patrones) do
     if type(bank[v]) == "function" then bank[v](temp)
@@ -227,7 +228,7 @@ function moont.sec(var)
   
   local par = wrap(function (patrones,tono,dino,temp,vol1,vol2,dis,pit)
     while true do
-      pit = pit or 1 --0.5 for linux users
+      pit = pit or tono
       dis = dis or 0
       for i, v in ipairs(patrones) do
         if type(bank[v]) == "function" then bank[v](temp)
@@ -241,7 +242,7 @@ function moont.sec(var)
 )
   local arp = wrap(function (patrones,tono,dino,temp,vol1,vol2,dis,pit)
     while true do
-      pit = pit or 1 --0.5 for Linux user
+      pit = pit or tono 
       dis = dis or 0
       for i, v in ipairs(patrones) do
         if type(bank[v]) == "function" then bank[v](temp)
