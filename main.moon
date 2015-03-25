@@ -1,4 +1,9 @@
-export moon = require "moonlet"
-while true
-  luna = require "luna"
-  package.loaded.luna = nil
+moon = require "moonlet"
+moon.init "luna"
+
+--Or
+
+moon = require "midmoon"
+out1 = midi.openout 1 
+
+moont.init "luna"
