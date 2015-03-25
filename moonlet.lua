@@ -1,9 +1,9 @@
 --Moonlet
 --Lua/MoonScript experimental modules for audio livecoding
---Written by Elihu Garret, Mexico 2014
+--Written by Elihu Garret, Mexico 2015
+
 Gen = require "gen"
 local allen = require "allen"
-
 local moont = {}
 --globals
 math.randomseed(os.clock())
@@ -17,13 +17,15 @@ function moont.sleep(n)
   local t0 = clock()
   while clock() - t0 <= n do end
 end
+--
 --locals
 local fromFile = proAudio.sampleFromFile
+local remove = table.remove
 local insert = table.insert
 local concat = table.concat
-local tono = 1 --change this to 0.5 if you are on Linux
+local tono = 0.5 --change to 1 if you are on linux
 --Load your samples
-local dir = "../Samples/"
+local dir = "../Samples/Glitch/"
 local kic = fromFile(dir.."kick.ogg")
 local sna = fromFile(dir.."snare.ogg") 
 local ope = fromFile(dir.."openhat.ogg")
@@ -80,6 +82,13 @@ local function each(list, f, ...)
     f(index,value,...)
   end
 end
+----Init function
+function moont.init(file)
+	while true do
+		local luna = require(file)
+		package.loaded.luna = nil
+	end
+end
 ----
 --Relative tempo
 function moont.t(bpm)
@@ -94,7 +103,19 @@ function moont.rev(tab)
     insert(a,tab[i])
   end
   return a
-end 
+end
+----
+--Shift a table
+function moont.shift(tab,pl)
+  pl = pl or 1
+  local x
+  if pl >= 1 then x = 1 else x = -1 end
+  for i = 1,pl,x do
+    insert(tab,1,tab[#tab])
+    remove(tab,#tab)
+  end
+  return tab
+end
 ----
 --Like SC .clear
 function moont.clear(time)
@@ -171,8 +192,8 @@ end
 
 function string:sound(var) 
   local tabla = {}
-  for char in self:gmatch('.') do insert(tabla,char) end  
-  return var == 'r' and moont.shuffle(tabla) or #tabla>0 and tabla or nil 
+  for char in self:gmatch('.') do insert(tabla,char) end
+  return var == 'r' and moont.shuffle(tabla) or #tabla>0 and tabla or nil
 end
 ----
 
@@ -242,7 +263,7 @@ function moont.sec(var)
 )
   local arp = wrap(function (patrones,tono,dino,temp,vol1,vol2,dis,pit)
     while true do
-      pit = pit or tono 
+      pit = pit or tono
       dis = dis or 0
       for i, v in ipairs(patrones) do
         if type(bank[v]) == "function" then bank[v](temp)
