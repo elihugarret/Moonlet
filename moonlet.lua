@@ -202,6 +202,20 @@ end
   return step:sound()
  end
 ----
+function string:_(arg)
+  local q = {}
+  local w = self:sound(arg)
+  for c,v in ipairs(w) do
+    if tonumber(v) ~= nil and tonumber(w[c+1]) ~= nil then
+      v = v..w[c+1]
+      insert(q,v)
+      remove(w,c+1)
+      else insert(q,v)
+    end
+  end
+  return q
+end
+----
 --Pseudorandom string generator
  function moont.RSG(str,pattern,s, l)
           tble = str:gsub(' ',pattern)
