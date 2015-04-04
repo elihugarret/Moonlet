@@ -22,6 +22,30 @@ function midmoon.play_midi(port,note,vel,ch,dur)
   end
 end
 
+function midmoon.midi_chord(m)
+  m.port = m.port or 0
+  m.ch = m.ch or 1
+  m.vel = m.vel or 70
+  m.dur = m.dur or 0
+  if m.chord == "maj" then 
+    noteOn(m.port,m.note,m.vel,m.ch)  
+    noteOn(m.port,m.note+4,m.vel,m.ch)
+    noteOn(m.port,m.note+7,m.vel,m.ch)
+    moont.sleep(m.dur)
+    noteOff(m.port,m.note,m.vel,m.ch)
+    noteOff(m.port,m.note+4,m.vel,m.ch)
+    noteOff(m.port,m.note+7,m.vel,m.ch)
+  elseif m.chord == "min" then
+    noteOn(m.port,m.note,m.vel,m.ch)  
+    noteOn(m.port,m.note+3,m.vel,m.ch)
+    noteOn(m.port,m.note+7,m.vel,m.ch)
+    moont.sleep(m.dur)
+    noteOff(m.port,m.note,m.vel,m.ch)
+    noteOff(m.port,m.note+3,m.vel,m.ch)
+    noteOff(m.port,m.note+7,m.vel,m.ch)
+  end
+end
+
 function midmoon.mpattern(patrones,temp,vol1,vol2,dis,pit,ch,vel,dur)
   pit = pit or tone
   dis = dis or 0
@@ -92,6 +116,40 @@ function midmoon.sec_midi(var)
   for i = 1,x do
     par(var.pattern,moont.t(var.speed),var.R,var.L,var.disparity,var.pitch,var.channel,var.vel,arg.dur)
     arp(var.pattern2,moont.t(var.speed2),var.R2,var.L2,var.disparity2,var.pitch2,var.channel,var.vel2,arg.dur)
+  end
+end
+
+function midmoon.sek(foo)
+  --list - a table
+  --velNote - velocity of midi note
+  --velChord - velocity of midi chord
+  --channelNote - channel of midi note
+  --channelChord - channel of midi chord
+  --typeChord - major or minor chord
+  foo.portNote = foo.portNote or 1
+  foo.durNote = foo.durNote or 0.5
+  foo.durChord = foo.durChord or 0.5
+  foo.portChord = foo.portChord or 1
+  foo.L = foo.L or 0.5
+  foo.R = foo.R or foo.L
+  foo.disparity = foo.disparity or 0
+  foo.pitch = foo.pitch or tone
+  
+  for c,v in ipairs(foo.list) do
+    if type(v) == "string" and tonumber(v) ~= nil then
+      midmoon.play_midi(foo.portNote,v,foo.velNote,foo.channelNote,foo.durNote)
+    elseif type(v) == "number" then
+      midmoon.midi_chord{
+        port = foo.portChord,
+        chord = foo.typeChord,
+        note = v,
+        dur = foo.durChord,
+        channel = foo.channelChord,
+        vel = foo.velChord
+      }
+    else
+      soundPlay(bank[v],foo.L,foo.R,foo.disparity,foo.pitch)
+    end
   end
 end
 
