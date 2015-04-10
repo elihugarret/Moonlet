@@ -25,7 +25,7 @@ local insert = table.insert
 local concat = table.concat
 local tono = 0.5 --change to 1 if you are on linux
 --Load your samples
-local dir = "../Samples/Glitch/"
+local dir = "../Samples/Vint/"
 local kic = fromFile(dir.."kick.ogg")
 local sna = fromFile(dir.."snare.ogg") 
 local ope = fromFile(dir.."openhat.ogg")
@@ -94,6 +94,24 @@ end
 function moont.t(bpm)
   local x=30/bpm
   return x
+end
+----
+function moont.lpairs(...)
+  local t = {...}
+  local tmp = {...}
+  if #tmp==0 then
+    return function() end, nil, nil
+  end
+  local function mult_ipairs_it(t, i)
+    i = i+1
+    for j=1,#t do
+      local val = t[j][i]
+      if val == nil then return val end
+      tmp[j] = val
+    end
+    return i, unpack(tmp)
+  end
+  return mult_ipairs_it, t, 0
 end
 ----
 --Reverse a table
@@ -197,14 +215,14 @@ function string:sound(var)
 end
 ----
 
- function string:glue(r)
+function string:glue(r)
   local step = concat(self:sound(r),' ')..' '
   return step:sound()
- end
+end
 ----
 function string:_(arg)
   local q = {}
-  local w = self:sound(arg)
+  local w = self:gsub('|',''):sound(arg)
   for c,v in ipairs(w) do
     if tonumber(v) ~= nil and tonumber(w[c+1]) ~= nil then
       v = v..w[c+1]
@@ -319,6 +337,22 @@ function moont.seq(arg)
       elseif i < arg.every then moont.rpattern(arg.pattern,arg.scale+q*(arg.shift),
                                   arg.gen,moont.t(arg.speed),arg.R,arg.L,arg.disparity,arg.pitch)
       end
+    end
+  end
+end
+
+function moont.LSeq(v)
+  v.pitch = v.pitch or 0.5
+  v.disparity = v.disparity or 0
+  v.dur = v.dur or 1/4
+  v.scale = v.scale or 24
+  v.gen = v.gen or Gen.vR(1,1,100,1,1)
+  v.L = v.L or 0.5
+  v.R = v.R or v.L
+  do
+    if type(bank[v.seq]) == "function" then bank[v.seq](v.dur)
+      elseif type(bank[v.seq]) == "nil" then Gen.play(v.scale,v.gen,v.seq,v.dur,v.L/10,v.R/10,v.disparity)
+      else soundPlay(bank[v.seq],v.L,v.R,v.disparity,v.pitch)
     end
   end
 end
