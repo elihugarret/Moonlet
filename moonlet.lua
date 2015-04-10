@@ -342,7 +342,7 @@ function moont.seq(arg)
 end
 
 function moont.LSeq(v)
-  v.pitch = v.pitch or 0.5
+  v.pitch = v.pitch or tono
   v.disparity = v.disparity or 0
   v.dur = v.dur or 1/4
   v.scale = v.scale or 24
