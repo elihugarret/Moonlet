@@ -23,9 +23,9 @@ local fromFile = proAudio.sampleFromFile
 local remove = table.remove
 local insert = table.insert
 local concat = table.concat
-local tono = 0.5 --change to 1 if you are on linux
+local tono = 1 --change to 0.5 if you are on linux
 --Load your samples
-local dir = "../Samples/Vint/"
+local dir = "../Samples/"
 local kic = fromFile(dir.."kick.ogg")
 local sna = fromFile(dir.."snare.ogg") 
 local ope = fromFile(dir.."openhat.ogg")
