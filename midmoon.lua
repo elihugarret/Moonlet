@@ -8,7 +8,7 @@ midi = require "luamidi"
 local midmoon = {}
 
 local noteOn, noteOff = midi.noteOn, midi.noteOff
-local tone = 0.5 --change this to 1 if you're on linux
+local tone = 1 --change this to 0.5 if you're on linux
 
 function midmoon.play_midi(port,note,vel,ch,dur)
   port = port or 0
