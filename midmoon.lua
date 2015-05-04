@@ -128,9 +128,7 @@ function midmoon.LSek(foo)
   
   do
     if type(foo.seq) == "string" and tonumber(foo.seq) ~= nil then
-      midmoon.play_midi(foo.portNote,foo.seq,foo.velNote,foo.channelNote,foo.durNote)
-    elseif type(foo.seq) == "number" then
-      midmoon.midi_chord{
+       midmoon.midi_chord{
         port = foo.portChord,
         chord = foo.typeChord,
         note = foo.seq,
@@ -138,6 +136,8 @@ function midmoon.LSek(foo)
         channel = foo.channelChord,
         vel = foo.velChord
       }
+    elseif type(foo.seq) == "number" then
+      midmoon.play_midi(foo.portNote,foo.seq,foo.velNote,foo.channelNote,foo.durNote)
     else
       soundPlay(bank[foo.seq],foo.L,foo.R,foo.disparity,foo.pitch)
     end
