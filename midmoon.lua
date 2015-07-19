@@ -3,15 +3,16 @@
 
 moont = require "moonlet"
 midi = require "luamidi"
-
-
 local midmoon = {}
 
+local tonumber = tonumber
+local insert = table.insert
 local noteOn, noteOff = midi.noteOn, midi.noteOff
 local tone = 1 --change this to 0.5 if you're on linux
 
+
 function midmoon.play_midi(port,note,vel,ch,dur)
-  port = port or 0
+  port = port or 1
   ch = ch or 1
   vel = vel or 70
   dur = dur or 0
@@ -42,6 +43,14 @@ function midmoon.midi_chord(m)
     moont.sleep(m.dur)
     noteOff(m.port,m.note,m.vel,m.ch)
     noteOff(m.port,m.note+3,m.vel,m.ch)
+    noteOff(m.port,m.note+7,m.vel,m.ch)
+  elseif m.chord == "sus4" then
+    noteOn(m.port,m.note,m.vel,m.ch)  
+    noteOn(m.port,m.note+5,m.vel,m.ch)
+    noteOn(m.port,m.note+7,m.vel,m.ch)
+    moont.sleep(m.dur)
+    noteOff(m.port,m.note,m.vel,m.ch)
+    noteOff(m.port,m.note+5,m.vel,m.ch)
     noteOff(m.port,m.note+7,m.vel,m.ch)
   end
 end
@@ -119,23 +128,13 @@ function midmoon.LSek(foo)
   --typeChord - major or minor chord
   foo.portNote = foo.portNote or 1
   foo.durNote = foo.durNote or 0.5
-  foo.durChord = foo.durChord or 0.5
-  foo.portChord = foo.portChord or 1
   foo.L = foo.L or 0.5
   foo.R = foo.R or foo.L
   foo.disparity = foo.disparity or 0
   foo.pitch = foo.pitch or tone
   
   do
-    if type(foo.seq) == "string" and tonumber(foo.seq) ~= nil then
-       midmoon.midi_chord{
-        port = foo.portChord,
-        chord = foo.typeChord,
-        note = foo.seq,
-        dur = foo.durChord,
-        channel = foo.channelChord,
-        vel = foo.velChord
-      }
+    if type(bank[foo.seq]) == "function" then bank[foo.seq](foo.durNote)
     elseif type(foo.seq) == "number" then
       midmoon.play_midi(foo.portNote,foo.seq,foo.velNote,foo.channelNote,foo.durNote)
     else

@@ -25,7 +25,7 @@ local insert = table.insert
 local concat = table.concat
 local tono = 1 --change to 0.5 if you are on linux
 --Load your samples
-local dir = "../Samples/"
+local dir = "../Samples/Techno/"
 local kic = fromFile(dir.."kick.ogg")
 local sna = fromFile(dir.."snare.ogg") 
 local ope = fromFile(dir.."openhat.ogg")
@@ -49,17 +49,17 @@ local snap = fromFile(dir.."sna.ogg")
 bank = {
   x = kic,
   o = sna,
-  ['*'] = hat,
-  ['-'] = ope,
-  ['&'] = rob,
-  ['#'] = vel,
-  ['+'] = iro,
-  ['$'] = exh,
-  ['@'] = air,
-  ['%'] = ice,
-  ['~'] = kit,
-  ['!'] = met,
-  [';'] = tin,
+  h = hat,
+  p = ope,
+  m = rob,
+  v = vel,
+  c = iro,
+  l = exh,
+  a = air,
+  i = ice,
+  k = kit,
+  t = met,   
+  b = tin,
   A = tam,
   B = mar,
   C = cab,
@@ -67,9 +67,9 @@ bank = {
   E = pan,
   F = woo,
   G = snap,
-  [' '] = function (dur) Gen.play(1,Gen.vR(1,1,1,1),1,dur,0,0) end,
+  s = function (dur) moont.sleep(dur) end,
 }
-----
+------[[Gen.play(1,Gen.vR(1,1,1,1),1,dur,0,0)--]]
 -- isTable
 local function isTable(t)
   return type(t) == 'table'
@@ -85,7 +85,8 @@ end
 ----Init function
 function moont.init(file)
 	while true do
-		local luna = require(file)
+		local luna = xpcall(function () return require(file) end,
+      function () print("error"); moont.sleep(1) end)
 		package.loaded.luna = nil
 	end
 end
@@ -220,20 +221,33 @@ function string:glue(r)
   return step:sound()
 end
 ----
-function string:_(arg)
-  local q = {}
-  local w = self:gsub('|',''):sound(arg)
-  for c,v in ipairs(w) do
-    if tonumber(v) ~= nil and tonumber(w[c+1]) ~= nil then
-      v = v..w[c+1]
-      insert(q,v)
-      remove(w,c+1)
-      else insert(q,v)
+local function parse(sr)
+  local a, b, c, d
+  a = sr:gsub('?', ' 0')
+  b = a:gsub('|', ' ')
+  c = b:gsub('[()]','')
+  d = words(c)
+  return d
+end
+local function div(i, j)
+  if j == 0 then return 0
+    else return (i/j)
+  end
+end
+
+function moont.zound(str, k)
+  k = k or 1
+  local mtrx = { notes = {}, dur = {} }
+  local e, h
+  e = parse(str)
+  for f, g in ipairs(e) do
+    h = tonumber(g) or g
+    if (f % 2) == 0 then insert(mtrx.dur, div(k,h))
+      else insert(mtrx.notes, h)
     end
   end
-  return q
+  return mtrx
 end
-----
 --Pseudorandom string generator
  function moont.RSG(str,pattern,s, l)
           tble = str:gsub(' ',pattern)
@@ -352,7 +366,7 @@ function moont.LSeq(v)
   do
     if type(bank[v.seq]) == "function" then bank[v.seq](v.dur)
       elseif type(bank[v.seq]) == "nil" then Gen.play(v.scale,v.gen,v.seq,v.dur,v.L/10,v.R/10,v.disparity)
-      else soundPlay(bank[v.seq],v.L,v.R,v.disparity,v.pitch)
+      else soundPlay(bank[v.seq],v.Ls,v.Rs,v.disparity,v.pitch)
     end
   end
 end
