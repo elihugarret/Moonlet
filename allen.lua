@@ -73,17 +73,8 @@ local luaTokens = {
 
 local mtstr = getmetatable('')
 
-function mtstr.__add(a,b) -- Randomize 2 strings instead of concat. Metamethod by Elihú Garrett (2014)
-  math.randomseed(os.clock())
-  local fus = {}
-  local tbl = chars(a..b)
-  for c, v in ipairs(tbl) do
-    table.insert(fus,math.random(c),v)  
-  end
-  return fus 
-end
 --Uncomment this if you are using Lua. Comment if you are using MoonScript
---function mtstr.__mul(a,b) return type(a) == 'string' and a:rep(b) or b:rep(a) end
+function mtstr.__mul(a,b) return type(a) == 'string' and a:rep(b) or b:rep(a) end
 function mtstr.__pow(a,b) return a:rep(b^#a) end
 function mtstr.__div(a,b) return chop(a,b) end
 function mtstr.__unm(a) return a:reverse() end
