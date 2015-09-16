@@ -1,5 +1,5 @@
 --Moonlet
---Lua/MoonScript experimental module for audio livecoding
+--Experimental module for audio livecoding
 --Written by Elihu Garret, Mexico 2015
 
 local Gen = require "gen"
