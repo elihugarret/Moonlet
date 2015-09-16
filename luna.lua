@@ -4,12 +4,14 @@ local a = ([[
   x c3 c4 x p d2 a#4
   h c3 x f3 a#3 x p g4 c3
   ]]):n()
+
 local b = ([[
   - 32 32 16 - - 16 16
   - 16 - 16 - - 16 16
   - 16 16 - - 16 16
   - 16 - 32 32 - - 16 16
   ]]):r(4)
+
 local d = {'a3','c4','e4'}
 
 for _, v in ipairs(a) do
@@ -23,5 +25,5 @@ for _, v in ipairs(a) do
   L = 1,
   port = 0,
   vel = 70
-}
+  }
 end 
