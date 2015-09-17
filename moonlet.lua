@@ -16,6 +16,10 @@ local fromFile = proAudio.sampleFromFile
 local remove = table.remove
 local insert = table.insert
 local tonumber = tonumber
+local max = math.max
+local min = math.min
+local floor = math.floor
+local unpack = unpack
 local tono = 1 --change to 0.5 if you are on linux
 local noteOn, noteOff = midi.noteOn, midi.noteOff
 local dir = "../Samples/Techno/"
@@ -113,6 +117,35 @@ function moont.init(file)
 	end
 end
 
+function moont.normalize(rango_i, rango_f, t)
+  local tr = {}
+  local x_max = max(unpack(t))
+  local x_min = min(unpack(t))
+  for i = 1, #t do
+    tr[i] = floor(rango_i + ((t[i] - x_min) * (rango_f - rango_i) / (x_max - x_min)))
+  end
+  return tr 
+end
+
+function moont.spec_norm(t1, t2)
+  local tq = {}
+  local l = #t1
+  local n = _.normalize(1,l,t2)
+  for c, v in ipairs(n) do
+    tq[c] = t1[v]
+  end
+  return tq
+end
+
+function string:notes(t)
+  local tw = {}
+  local i = 1
+  for v in self:gmatch '.' do
+    tw[i] = v:byte()
+    i = i + 1
+  end
+  return _.spec_norm(t, tw)
+end
 --y[moont.w(_, #y)]
 function moont.w(counter, lenght)
   local var = counter % lenght
