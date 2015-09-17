@@ -130,7 +130,7 @@ end
 function moont.spec_norm(t1, t2)
   local tq = {}
   local l = #t1
-  local n = _.normalize(1,l,t2)
+  local n = moont.normalize(1,l,t2)
   for c, v in ipairs(n) do
     tq[c] = t1[v]
   end
@@ -140,11 +140,11 @@ end
 function string:notes(t)
   local tw = {}
   local i = 1
-  for v in self:gmatch '.' do
+  for v in self:gmatch '%S+' do
     tw[i] = v:byte()
     i = i + 1
   end
-  return _.spec_norm(t, tw)
+  return moont.spec_norm(t, tw)
 end
 --y[moont.w(_, #y)]
 function moont.w(counter, lenght)
