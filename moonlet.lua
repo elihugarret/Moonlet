@@ -316,7 +316,6 @@ function moont.n_seq(n)
   n.ch1 = n.ch1 or 1
   
   n.port2 = n.port2 or n.port1
-  n.vel2 = n.vel2 or n.vel1
   n.ch2 = n.ch2 or n.ch1
   
   xp(function () 
@@ -330,8 +329,8 @@ function moont.n_seq(n)
   
   moont.sleep(n.dur)
   
-  xp(function () noteOff(n.port1,notes[n.note1],n.vel1,n.ch1) end,f)
-  xp(function () noteOff(n.port2,notes[n.note2],n.vel2,n.ch2) end,f)
+  xp(function () noteOff(n.port1,notes[n.note1],0,n.ch1) end,f)
+  xp(function () noteOff(n.port2,notes[n.note2],0,n.ch2) end,f)
   
 end
 
