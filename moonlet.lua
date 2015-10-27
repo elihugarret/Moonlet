@@ -314,8 +314,8 @@ function moont.n_seq(n)
   n.port1 = n.port1 or 0
   n.vel1 = n.vel1 or 70
   n.ch1 = n.ch1 or 1
-  
   n.port2 = n.port2 or n.port1
+  n.vel2 = n.vel2 or n.vel1
   n.ch2 = n.ch2 or n.ch1
   
   xp(function () 
