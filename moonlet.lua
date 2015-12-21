@@ -71,6 +71,22 @@ local bank = {
 }
 ------[[Gen.play(1,Gen.vR(1,1,1,1),1,dur,0,0)--]]
 
+local deg = {
+    i = 0,
+    iim = 1,
+    iiM = 2,
+    iiim = 3,
+    iiiM = 4,
+    iv = 5,
+    ivA = 6,
+    v = 7,
+    vim = 8,
+    viM = 9,
+    viim = 10,
+    viiM = 11,
+    viii = 12
+    }
+
 local clock = os.clock
 function moont.sleep(n) 
   local t0 = clock()
@@ -143,8 +159,10 @@ function string:notes(t)
   local tw = {}
   local i = 1
   for v in self:gmatch '.' do
+    if v ~= ' ' then 
     tw[i] = v:byte()
     i = i + 1
+    end
   end
   return moont.spec_norm(t, tw)
 end
@@ -195,6 +213,24 @@ function moont.choose(...)
   return var[math.random(#var)]
 end
 
+function moont.i_sort(array)
+  local len = #array
+  local j, k
+  local m = {}
+  for j = 2, len do
+    local key = array[j]
+    local i = j-1
+    while i > 0 and array[i] > key do
+      array[i+1] = array[i]
+      i = i-1
+    end
+    array[i+1] = key
+    k = {unpack(array)}
+    insert(m,k)
+  end
+  return m
+end
+
 function moont.shuffle(list)
    local shuffled = {}
   each(list,function(index,value)
@@ -203,6 +239,28 @@ function moont.shuffle(list)
     shuffled[randPos] = value
     end)
   return shuffled
+end
+
+function moont.rgen(s,...)
+  local t = {}
+  for i = 1, s do
+    t[i] = moont.choose(...)
+  end
+  return t
+end
+
+function moont.inter(a,b)
+  local t = {}
+  for i = 1, #b do
+    for j = 1, #a do
+      if a[j] == '_' then
+        t[#t+1] = '_'
+      else
+        t[#t+1] = a[j] + deg[b[i]]
+      end
+    end
+  end
+  return t
 end
 
 function moont.range(...)
@@ -301,6 +359,9 @@ local f = function () end
 
 function moont.n_seq(n)
   
+  local nota1 = notes[n.note1] or n.note1
+  local nota2 = notes[n.note2] or n.note2
+  
   n.L1 = n.L1 or 1
   n.R1 = n.R1 or 1
   n.disparity1 = n.disparity1 or 0
@@ -314,8 +375,8 @@ function moont.n_seq(n)
   n.port1 = n.port1 or 0
   n.vel1 = n.vel1 or 70
   n.ch1 = n.ch1 or 1
+  
   n.port2 = n.port2 or n.port1
-  n.vel2 = n.vel2 or n.vel1
   n.ch2 = n.ch2 or n.ch1
   
   xp(function () 
@@ -324,13 +385,13 @@ function moont.n_seq(n)
   xp(function () 
       soundPlay(bank[n.beat2],n.L2,n.R2,n.disparity2,n.pitch2)
     end,f)
-  xp(function () noteOn(n.port1,notes[n.note1],n.vel1,n.ch1) end,f)
-  xp(function () noteOn(n.port2,notes[n.note2],n.vel2,n.ch2) end,f)
+  xp(function () noteOn(n.port1,nota1,n.vel1,n.ch1) end,f)
+  xp(function () noteOn(n.port2,nota2,n.vel2,n.ch2) end,f)
   
   moont.sleep(n.dur)
   
-  xp(function () noteOff(n.port1,notes[n.note1],0,n.ch1) end,f)
-  xp(function () noteOff(n.port2,notes[n.note2],0,n.ch2) end,f)
+  xp(function () noteOff(n.port1,nota1,0,n.ch1) end,f)
+  xp(function () noteOff(n.port2,nota2,0,n.ch2) end,f)
   
 end
 
