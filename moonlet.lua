@@ -6,6 +6,7 @@ local Gen = require "gen"
 local allen = require "allen"
 local midi = require "luamidi"
 local moses = require "moses"
+local ffi = require "ffi"
 local moont = {}
 
 math.randomseed(os.clock())
@@ -24,7 +25,7 @@ local unpack = unpack
 local xp = xpcall
 local tono = 1 --change to 0.5 if you are on linux
 local noteOn, noteOff = midi.noteOn, midi.noteOff
-local dir = "../Samples/Techno/"
+local dir = "../Samples/808/"
 local kic = fromFile(dir.."kick.ogg")
 local sna = fromFile(dir.."snare.ogg") 
 local ope = fromFile(dir.."openhat.ogg")
@@ -71,26 +72,23 @@ local bank = {
 }
 ------[[Gen.play(1,Gen.vR(1,1,1,1),1,dur,0,0)--]]
 
-local deg = {
-    i = 0,
-    iim = 1,
-    iiM = 2,
-    iiim = 3,
-    iiiM = 4,
-    iv = 5,
-    ivA = 6,
-    v = 7,
-    vim = 8,
-    viM = 9,
-    viim = 10,
-    viiM = 11,
-    viii = 12
-    }
+ffi.cdef[[
+void Sleep(int ms);
+int poll(struct pollfd *fds, unsigned long nfds, int timeout);
+]]
 
-local clock = os.clock
-function moont.sleep(n) 
-  local t0 = clock()
-  while clock() - t0 <= n do end
+if ffi.os == "Windows" then
+  function moont.sleep(s)
+    ffi.C.Sleep(s*1000)
+  end
+else
+  function moont.sleep(s)
+    ffi.C.poll(nil, 0, s*1000)
+  end
+end
+
+function moont.bpm(b)
+  return (60/b) / 2
 end
 
 function string:n()
@@ -199,6 +197,61 @@ function moont.clear(time)
   destroy()
   os.exit()
 end
+
+function moont.Q(q)
+  q.s = q.s or 32
+  q.o = q.o or {}
+  t = {}
+  if #q.w ~= #q.p then return print "no coincide tamaño de tablas" end
+  local x = 0
+  for i = 1, q.s do
+    x = x + 1
+    if not q.w[x] then x = 1 end
+    if math.random() <= q.w[x] then t[i] = q.p[x] else t[i] = q.o[x] or '_' end
+  end
+  return t
+end
+
+local function non_repeat(t)
+  local hash = {}
+  local res = {}
+  for _,v in ipairs(t) do
+    if (not hash[v]) then
+      res[#res+1] = v 
+      hash[v] = true
+    end
+  end
+  return res
+end
+
+local function put(stbl,btbl)
+  local t = {}
+  for i = 1, #stbl do
+    t[i] = btbl[stbl[i]]
+  end
+  return t
+end
+
+local function get_weights(z,y,r)
+  r = r or 0
+  local t ={}
+  local v
+  for i = 1, #y do
+    v = (moses.count(z,y[i]) / #z) + r 
+    t[i] = v 
+  end
+  return t
+end
+function moont.A(a)  
+  local z = chars(a.T)
+  local y = non_repeat(z)
+  local x = bytes(a.T)
+  local v = put(y,x)
+  local u = get_weights(z,y,a.D)
+  local norm = moont.spec_norm(a.P,v)
+  return moont.Q{p = norm, w = u, o = a.O, s = a.S}
+end
+
 -- .ogg player  [proAudioRt can't handle high quality .wav files]
 function moont.sample(tipo)
   tipo.disparity = tipo.disparity or 0
@@ -241,6 +294,7 @@ function moont.shuffle(list)
   return shuffled
 end
 
+
 function moont.rgen(s,...)
   local t = {}
   for i = 1, s do
@@ -249,19 +303,6 @@ function moont.rgen(s,...)
   return t
 end
 
-function moont.inter(a,b)
-  local t = {}
-  for i = 1, #b do
-    for j = 1, #a do
-      if a[j] == '_' then
-        t[#t+1] = '_'
-      else
-        t[#t+1] = a[j] + deg[b[i]]
-      end
-    end
-  end
-  return t
-end
 
 function moont.range(...)
   local arg = {...}
@@ -309,6 +350,13 @@ function moont.midi_notes()
 end
 
 local notes = moont.midi_notes()
+
+function moont.to_midi(t)
+  for i = 1, #t do
+    t[i] = notes[t[i]]
+  end
+  return t
+end
 
 function moont.chord(t, c, i, f, v, p, ch)
   v = v or 77
@@ -374,6 +422,7 @@ function moont.n_seq(n)
   
   n.port1 = n.port1 or 0
   n.vel1 = n.vel1 or 70
+  n.vel2 = n.vel2 or 70
   n.ch1 = n.ch1 or 1
   
   n.port2 = n.port2 or n.port1
