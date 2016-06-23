@@ -13,6 +13,8 @@ math.randomseed(os.clock())
 
 moont.openout = midi.openout
 moont.send_message = midi.sendMessage
+moont.base0 = midi.base0
+moont.base1 = midi.base1
 local soundPlay = proAudio.soundPlay
 local fromFile = proAudio.sampleFromFile
 local remove = table.remove
@@ -303,6 +305,10 @@ function moont.rgen(s,...)
   return t
 end
 
+local function note_off(puerto,nota,canal)
+  moont.send_message(puerto,128,nota,0,canal)
+end
+
 
 function moont.range(...)
   local arg = {...}
@@ -361,14 +367,14 @@ end
 function moont.chord(t, c, i, f, v, p, ch)
   v = v or 77
   p = p or 0
-  ch = ch or 1
+  ch = ch or 0
   if c == i then
     for _, q in ipairs(t) do
       noteOn(p, notes[q] or q, v, ch)
     end
   elseif c == f then
     for _, q in ipairs(t) do
-      noteOff(p, notes[q] or q, v, ch)
+      note_off(p, notes[q] or q,ch)
     end
   end
 end
@@ -423,7 +429,7 @@ function moont.n_seq(n)
   n.port1 = n.port1 or 0
   n.vel1 = n.vel1 or 70
   n.vel2 = n.vel2 or 70
-  n.ch1 = n.ch1 or 1
+  n.ch1 = n.ch1 or 0
   
   n.port2 = n.port2 or n.port1
   n.ch2 = n.ch2 or n.ch1
@@ -439,8 +445,8 @@ function moont.n_seq(n)
   
   moont.sleep(n.dur)
   
-  xp(function () noteOff(n.port1,nota1,0,n.ch1) end,f)
-  xp(function () noteOff(n.port2,nota2,0,n.ch2) end,f)
+  xp(function () note_off(n.port1,nota1,n.ch1) end,f)
+  xp(function () note_off(n.port2,nota2,n.ch2) end,f)
   
 end
 
